@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Visits list view -->
+    <template id="portal_my_visits" priority="20">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Your Visits</t>
+            </t>
+            <div t-if="not visits" class="alert alert-warning" role="alert">
+                There are currently no visits for your account.
+            </div>
+            <t t-if="visits" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>
+                            <span class='d-none d-md-inline'>Visit #</span>
+                            <span class='d-block d-md-none'>Ref.</span>
+                        </th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>State</th>
+                        <!--                        <th class="text-end">Order Date</th>-->
+                        <!--                        <th class="text-end">Total</th>-->
+                    </tr>
+                </thead>
+                <t t-foreach="visits" t-as="visit">
+                    <tr>
+                        <td><a t-att-href="visit.get_portal_url()"><t t-out="visit.name"/></a></td>
+                        <td><t t-out="visit.patient_id.name"/></td>
+                        <td><t t-out="visit.doctor_id.name"/></td>
+                        <td><t t-out="visit.visit_date"/></td>
+                        <td><t t-out="visit.state"/></td>
+                        <!--                        <td class="text-end">-->
+                        <!--                            <span t-field="order.date_order" t-options="{'widget': 'date'}"/>&amp;nbsp;-->
+                        <!--                            <span class='d-none d-md-inline' t-field="order.date_order" t-options="{'time_only': True}"/>-->
+                        <!--                        </td>-->
+                        <!--                        <td class="text-end"><span t-field="order.amount_total"/></td>-->
+                    </tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Visit detail view -->
+    <template id="portal_my_visit_detail" priority="20">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Visit Details</t>
+            <t t-set="breadcrumb">Visit Details</t>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Visit
+                                    <span t-esc="visit.name"/>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h5>Basic Information</h5>
+                                        <p>
+                                            <strong>Date:</strong>
+                                            <span t-esc="visit.visit_date"/>
+                                        </p>
+                                        <p>
+                                            <strong>Patient:</strong>
+                                            <span t-esc="visit.patient_id.name"/>
+                                        </p>
+                                        <p>
+                                            <strong>Doctor:</strong>
+                                            <span t-esc="visit.doctor_id.name"/>
+                                        </p>
+                                        <p>
+                                            <strong>Status:</strong>
+                                            <span t-attf-class="badge bg-{{
+                                            'success' if visit.state == 'completed' else
+                                            'warning' if visit.state == 'scheduled' else
+                                            'danger'
+                                        }}">
+                                                <t t-esc="visit.state"/>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <h5>Notes</h5>
+                                        <p t-esc="visit.notes or 'No notes available'" class="text-muted"/>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4" t-if="visit.prescription">
+                                    <div class="col-md-12">
+                                        <h5>Prescription Summary</h5>
+                                        <p t-esc="visit.prescription" class="text-muted"/>
+                                    </div>
+                                </div>
+
+                                <div class="row" t-if="visit.prescription_line_ids">
+                                    <div class="col-md-12">
+                                        <h5>Prescription Details</h5>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Medicine</th>
+                                                    <th>Dosage</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Subtotal</th>
+                                                    <th>Duration</th>
+                                                    <th>Instructions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="visit.prescription_line_ids" t-as="line">
+                                                    <tr>
+                                                        <td>
+                                                            <span t-esc="line.medicine_id.name or '-'"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line.dosage or '-'"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line.quantity or '-'"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="'%.2f' % line.price if line.price else '-'"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="'%.2f' % line.subtotal if line.subtotal else '-'"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line.duration or '-'"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line.notes or '-'"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                                <tr style="font-weight: bold;">
+                                                    <td colspan="5" style="text-align: right;">Total:</td>
+                                                    <td>
+                                                        <span t-esc="'%.2f' % visit.prescription_total"/>
+                                                    </td>
+                                                </tr>
+                                                <tr style="font-weight: bold;">
+                                                    <td colspan="5" style="text-align: right;">Payment Amount:</td>
+                                                    <td>
+                                                        <span t-esc="'%.2f' % visit.payment_amount if visit.payment_amount else '0.00'"/>
+                                                    </td>
+                                                </tr>
+                                                <tr style="font-weight: bold;">
+                                                    <td colspan="5" style="text-align: right;">Payable Amount:</td>
+                                                    <td>
+                                                        <span t-esc="'%.2f' % visit.payable_amount"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <a href="/my/visits" class="btn btn-secondary">Back to Visits</a>
+                                    <a t-att-href="'/report/pdf/hpp.report_patient_visit_receipt/' + str(visit.id)"
+                                       class="btn btn-primary ms-2">Download Receipt
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="mail_template_appointment_schedule2" model="mail.template">
+            <field name="name">Appointment Schedule Email2</field>
+            <field name="model_id" ref="hpp.model_calendar_event"/>
+            <field name="subject">Appointment for {{ object.name }}</field>
+            <field name="email_from">{{ (user.email_formatted or '') }}</field>
+            <field name="email_to">{{ (object.partner_id.email_formatted or '') }}</field>
+            <field name="description">Sent automatically to someone after they registered to an event</field>
+            <!--            <field name="body_html" type="html">-->
+            <!--                <p>Your appointment has been scheduled</p>-->
+            <!--                <p>Hello</p>-->
+            <field name="body_html"><![CDATA[
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #2e6c80;">Appointment Confirmation</h2>
+                    <p>Dear Patient,</p>
+
+                    <p>Your appointment has been successfully scheduled with the following details:</p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd; width: 30%;">
+                                <strong>Appointment:</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>Date &amp; Time:</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.start"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>Duration:</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.duration"/> minutes
+                            </td>
+                        </tr>
+                        <t t-if="object.payment_amount">
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">
+                                    <strong>Payment Amount:</strong>
+                                </td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">
+                                    <t t-out="object.payment_amount"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">
+                                    <strong>Payment Method:</strong>
+                                </td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">
+                                    <t t-out="object.payment_method"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+
+                    <p>Please arrive 10 minutes before your scheduled time.</p>
+                    <p>If you need to reschedule or cancel your appointment, please contact us at
+                        <t t-out="object.user_id.company_id.phone or ''"/>
+                    </p>
+
+                    <p>Best regards,<br/>
+                        <t t-out="object.user_id.company_id.name or ''"/>
+                    </p>
+                </div>
+            ]]></field>
+            <!--            </field>-->
+            <field name="lang">{{ object.partner_id.lang }}</field>
+        </record>
+    </data>
+</odoo>

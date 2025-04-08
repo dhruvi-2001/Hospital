@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_patient_list" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_patient', '=', True)]</field>
+        <field name="context">{'default_is_patient': True}</field>
+    </record>
+
+    <record id="action_disease_list" model="ir.actions.act_window">
+        <field name="name">Diseases</field>
+        <field name="res_model">hospital.disease</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_allergy_list" model="ir.actions.act_window">
+        <field name="name">Allergies</field>
+        <field name="res_model">hospital.allergy</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Actions should be defined first -->
+    <record id="action_patient_visit_list" model="ir.actions.act_window">
+        <field name="name">Visits</field>
+        <field name="res_model">patient.visit</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <record id="action_patient_prescription_line" model="ir.actions.act_window">
+        <field name="name">Prescriptions</field>
+        <field name="res_model">prescription.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+
+    <!-- Main Menu -->
+    <menuitem id="hospital_main_menu" name="Hospital" sequence="10"/>
+
+    <!-- Submenu for Patients -->
+    <menuitem id="hospital_patient_menu" name="Patients" parent="hospital_main_menu" action="action_patient_list"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="hospital_configuration_menu" name="Configuration" parent="hospital_main_menu" sequence="20"/>
+
+    <!-- Disease Submenu -->
+    <menuitem id="hospital_disease_menu" name="Diseases" parent="hospital_configuration_menu"
+              action="action_disease_list" sequence="10"/>
+
+    <!-- Allergy Submenu -->
+    <menuitem id="hospital_allergy_menu" name="Allergies" parent="hospital_configuration_menu"
+              action="action_allergy_list" sequence="20"/>
+
+    <menuitem id="menu_patient_visit" name="Visits" parent="hospital_main_menu" action="action_patient_visit_list"
+              sequence="30"/>
+    <menuitem id="menu_patient_prescription" name="Prescriptions" parent="hospital_main_menu"
+              action="action_patient_prescription_line" sequence="40"/>
+
+
+</odoo>
+
+
+
+

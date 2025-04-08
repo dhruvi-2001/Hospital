@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_patient_visit_list" model="ir.ui.view">
+        <field name="name">patient.visit.list</field>
+        <field name="model">patient.visit</field>
+        <field name="arch" type="xml">
+            <list string="Patient Visits">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="visit_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_patient_visit_form" model="ir.ui.view">
+        <field name="name">patient.visit.form</field>
+        <field name="model">patient.visit</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" clickable="1"/>
+                    <button name="print_payment_receipt" string="Print Receipt" type="object" class="btn-primary"
+                            invisible="[['|', ('state', '!=', 'completed')]]"/>
+
+                    <button name="action_view_payments" string="Payments" type="object"
+                            class="oe_stat_button" icon="fa-money"
+                            groups="base.group_user,base.group_erp_manager,hpp.group_desk_person">
+                        <field name="payment_count" widget="statinfo" string="Payments"/>
+                    </button>
+                </header>
+
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="doctor_id"/>
+                            <field name="visit_date"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Details">
+                            <field name="notes" placeholder="Enter visit notes..."/>
+                        </page>
+                        <page string="Prescription">
+                            <field name="prescription" placeholder="Enter prescription notes..."/>
+                            <field name="prescription_line_ids">
+                                <list editable="bottom">
+                                    <field name="medicine_id"/>
+                                    <field name="dosage"/>
+                                    <field name="quantity"/>
+                                    <field name="price"/>
+                                    <field name="subtotal"/>
+                                    <field name="duration"/>
+                                    <field name="notes"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="medicine_id"/>
+                                        <field name="dosage"/>
+                                        <field name="quantity"/>
+                                        <field name="quantity"/>
+                                        <field name="price"/>
+                                        <field name="subtotal"/>
+                                        <field name="duration"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Add to patient form view -->
+    <record id="view_partner_form_inherit_visits" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.visits</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="view_partner_form_inherit_patient_details"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Visits">
+                    <group invisible="not is_patient">
+                        <field name="is_patient" invisible="1"/>
+                        <field name="visit_ids">
+                            <list>
+                                <field name="name"/>
+                                <field name="doctor_id"/>
+                                <field name="visit_date"/>
+                                <field name="state"/>
+                            </list>
+                            <form>
+                                <field name="name"/>
+                                <field name="doctor_id"/>
+                                <field name="visit_date"/>
+                                <field name="state"/>
+                                <field name="notes"/>
+                                <field name="prescription"/>
+                                <field name="prescription_line_ids"/>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_kanban_view_patient_visit" model="ir.ui.view">
+        <field name="name">res.partner.view.kanban.calendar</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+            <xpath expr="//footer/div" position="inside">
+                <a t-if="record.visit_count.value>0" type="object" name="visit_count"
+                   class="btn btn-sm btn-link smaller" role="button">
+                    <i class="fa fa-calendar me-1" aria-label="Visits" role="img" title="Visits"/>
+                    <field name="visit_count"/>
+                </a>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search view for patient visits -->
+    <record id="view_patient_visit_search" model="ir.ui.view">
+        <field name="name">patient.visit.search</field>
+        <field name="model">patient.visit</field>
+        <field name="arch" type="xml">
+            <search string="Patient Visits">
+                <!-- Basic search fields -->
+                <field name="name" string="Visit ID"/>
+                <field name="patient_id" string="Patient"/>
+                <field name="doctor_id" string="Doctor"/>
+                <field name="visit_date" string="Visit Date"/>
+
+                <!-- Filters -->
+                <filter string="Scheduled Visits" name="scheduled" domain="[('state','=','scheduled')]"/>
+                <filter string="Completed Visits" name="completed" domain="[('state','=','completed')]"/>
+                <filter string="Cancelled Visits" name="cancelled" domain="[('state','=','cancelled')]"/>
+
+                <!-- Group By options -->
+                <group expand="1" string="Group By">
+                    <filter string="Doctor" name="group_by_doctor" context="{'group_by':'doctor_id'}"/>
+                    <filter string="Patient" name="group_by_patient" context="{'group_by':'patient_id'}"/>
+                    <filter string="Visit Date" name="group_by_date" context="{'group_by':'visit_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Update the action to include the search view -->
+    <record id="action_patient_visit_list" model="ir.actions.act_window">
+        <field name="search_view_id" ref="view_patient_visit_search"/>
+        <field name="view_mode">kanban,list,form,pivot</field>
+    </record>
+
+    <!-- Add contextual button on partner form view -->
+    <record id="patient_visit_view_partners_form" model="ir.ui.view">
+        <field name="name">res_partner.view.form.calendar</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field eval="1" name="priority"/>
+        <field name="arch" type="xml">
+            <data>
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object"
+                            name="action_view_visits"
+                            icon="fa-calendar"
+                            context="{'partner_id': id, 'partner_name': name}">
+                        <field string="Visits" name="visit_count" widget="statinfo"/>
+                    </button>
+
+                    <button class="oe_stat_button" type="object"
+                            name="action_view_all_payments"
+                            icon="fa-money"
+                            groups="base.group_user,base.group_erp_manager,hpp.group_desk_person">
+                        <field string="Payments" name="payment_count" widget="statinfo"/>
+                    </button>
+                </div>
+            </data>
+        </field>
+    </record>
+
+    <record id="action_report_patient_visit_receipt" model="ir.actions.report">
+        <field name="name">Patient Visit Receipt</field>
+        <field name="model">patient.visit</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hpp.report_patient_visit_receipt</field>
+        <field name="report_file">hpp.report_patient_visit_receipt</field>
+        <field name="print_report_name">'Receipt - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_patient_visit"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="view_patient_visit_pivot" model="ir.ui.view">
+        <field name="name">patient.visit.pivot</field>
+        <field name="model">patient.visit</field>
+        <field name="arch" type="xml">
+            <pivot string="Patient Visits Analysis">
+                <!-- Row grouping fields -->
+                <field name="patient_id" type="row" string="Patient"/>
+                <field name="doctor_id" type="row" string="Doctor"/>
+
+                <!-- Column grouping fields -->
+                <field name="visit_date" type="col" interval="month" string="Month"/>
+                <field name="state" type="col" string="Status"/>
+
+                <!-- Measures/Values to aggregate -->
+                <field name="prescription_total" string="Total Prescription"/>
+                <field name="payment_amount" string="Total Payments"/>
+                <field name="payable_amount" string="Balance Payable"/>
+
+                <!-- Additional fields for filtering -->
+                <field name="visit_date" string="Date" invisible="1"/>
+                <field name="state" string="Status" invisible="1"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_patient_payment_pivot" model="ir.ui.view">
+        <field name="name">patient.payment.pivot</field>
+        <field name="model">patient.visit</field>
+        <field name="arch" type="xml">
+            <pivot string="Patient Payments Analysis">
+                <field name="patient_id" type="row"/>
+                <field name="visit_date" type="col" interval="month"/>
+                <field name="payment_amount" type="measure"/>
+                <field name="prescription_total" type="measure"/>
+                <field name="payable_amount" type="measure"/>
+                <field name="payment_method" type="col"/>
+                <field name="doctor_id" type="row"/>
+                <field name="state" type="filter"/>
+            </pivot>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_details" inherit_id="portal.portal_my_details_fields">
+        <xpath expr="//div[8]" position="replace">
+        </xpath>
+        <xpath expr="//div[6]" position="replace">
+            <div t-attf-class="mb-1 #{error.get('company_name') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="age">Age</label>
+                <input type="text" name="age"
+                       t-attf-class="form-control #{error.get('company_name') and 'is-invalid' or ''}"
+                       t-att-value="age or partner.age" readonly="readonly"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[7]" position="replace">
+            <div t-attf-class="mb-3 #{error.get('date_of_birth') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label" for="date_of_birth">Date of Birth</label>
+                <input type="date" name="date_of_birth"
+                       t-attf-class="form-control #{error.get('date_of_birth') and 'is-invalid' or ''}"
+                       t-att-value="date_of_birth or partner.date_of_birth"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[7]" position="after">
+            <div t-attf-class="mb-3 #{error.get('gender') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label" for="gender">Gender</label>
+                <select name="gender" t-attf-class="form-control #{error.get('gender') and 'is-invalid' or ''}">
+                    <option value="">Select Gender</option>
+                    <t t-foreach="request.env['res.partner'].fields_get(['gender'])['gender']['selection']"
+                       t-as="gender">
+                        <option t-att-value="gender[0]" t-att-selected="partner.gender == gender[0]" t-esc="gender[1]"/>
+                    </t>
+                </select>
+            </div>
+
+            <div t-attf-class="mb-3 #{error.get('blood_type') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label" for="blood_type">Blood Type</label>
+                <select name="blood_type" t-attf-class="form-control #{error.get('blood_type') and 'is-invalid' or ''}">
+                    <option value="">Select Blood Type</option>
+                    <t t-foreach="request.env['res.partner'].fields_get(['blood_type'])['blood_type']['selection']"
+                       t-as="blood">
+                        <option t-att-value="blood[0]" t-att-selected="partner.blood_type == blood[0]"
+                                t-esc="blood[1]"/>
+                    </t>
+                </select>
+            </div>
+
+            <div t-attf-class="mb-3 #{error.get('marital_status') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label" for="marital_status">Marital Status</label>
+                <select name="marital_status"
+                        t-attf-class="form-control #{error.get('marital_status') and 'is-invalid' or ''}">
+                    <option value="">Select Marital Status</option>
+                    <t t-foreach="request.env['res.partner'].fields_get(['marital_status'])['marital_status']['selection']"
+                       t-as="status">
+                        <option t-att-value="status[0]" t-att-selected="partner.marital_status == status[0]"
+                                t-esc="status[1]"/>
+                    </t>
+                </select>
+            </div>
+
+            <div>
+                <div class="mb-3 col-xl-6">
+                    <label class="col-form-label" for="hospital_info">Hospital Info</label>
+                    <textarea name="hospital_info" class="form-control" t-esc="partner.hospital_info"/>
+                </div>
+            </div>
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label" for="medical_history">Medical History</label>
+                <textarea name="medical_history" class="form-control" t-esc="partner.medical_history"/>
+            </div>
+
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label" for="emergency_contact">Emergency Contact</label>
+                <input type="text" name="emergency_contact" class="form-control"
+                       t-att-value="partner.emergency_contact"/>
+            </div>
+
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label" for="insurance_info">Insurance Info</label>
+                <textarea name="insurance_info" class="form-control" t-esc="partner.insurance_info"/>
+            </div>
+
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label">Insurance</label>
+                <input type="checkbox" name="is_insured" t-att-checked="partner.is_insured"/>
+            </div>
+
+        </xpath>
+    </template>
+
+    <template id="appointment_payment_form" inherit_id="appointment.appointment_form">
+        <xpath expr="//form[hasclass('appointment_submit_form')]/div[3]" position="after">
+            <div class="row mb-4">
+                <label class="col-sm-3 col-form-label fw-normal" for="payment_amount">Payment Amount*</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" name="payment_amount" id="payment_amount" required="1"
+                           t-att-value="'payment_amount' in partner_data and partner_data['payment_amount']"
+                           placeholder="Enter amount"/>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <label class="col-sm-3 col-form-label fw-normal" for="payment_method">Payment Method*</label>
+                <div class="col-sm-9">
+                    <select class="form-control" name="payment_method" id="payment_method" required="1">
+                        <option value="">Select Payment Method</option>
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="online">Online</option>
+                    </select>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="appointment_payment_validated_form" inherit_id="appointment.appointment_validated">
+        <xpath expr="//div[@t-if='attendee_description']" position="after">
+            <t t-if="event.payment_amount or event.payment_method" class="row mb-4">
+                <div class="col-3">
+                    <span class="text-muted">Payment</span>
+                </div>
+                <div class="col-9">
+                    <div t-if="event.payment_amount">
+                        Amount:
+                        <t t-out="event.payment_amount"/>
+                    </div>
+                    <div t-if="event.payment_method">
+                        Method:
+                        <t t-out="event.payment_method"/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_visit" inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+        <div id="portal_common_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <!--                <t t-set="icon" t-value="'/account/static/src/img/Bill.svg'"/>-->
+                <t t-set="title">Your Visits</t>
+                <t t-set="url" t-value="'/my/visits'"/>
+                <t t-set="text">Show your own visits</t>
+                <t t-set="config_card" t-value="True"/>
+                <!--                <t t-set="placeholder_count" t-value="'invoice_count'"/>-->
+            </t>
+        </div>
+    </template>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_disease_form" model="ir.ui.view">
+        <field name="name">hospital.disease.form</field>
+        <field name="model">hospital.disease</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="question_ids"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_disease_list" model="ir.ui.view">
+        <field name="name">hospital.disease.list</field>
+        <field name="model">hospital.disease</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>
+

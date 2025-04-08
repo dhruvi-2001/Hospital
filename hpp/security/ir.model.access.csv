@@ -1,0 +1,22 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_partner,access_res-partner,model_res_partner,base.group_user,1,1,1,1
+access_hospital_disease,access_hospital_disease,model_hospital_disease,base.group_user,1,1,1,1
+access_hospital_allergy,access_hospital_allergy,model_hospital_allergy,base.group_user,1,1,1,1
+access_hospital_disease_question,access_hospital_disease_question,model_hospital_disease_question,base.group_user,1,1,1,1
+access_hospital_allergy_question,access_hospital_allergy_question,model_hospital_allergy_question,base.group_user,1,1,1,1
+access_hospital_patient_disease_question,access_hospital_patient_disease_question,model_hospital_patient_disease_question,base.group_user,1,1,1,1
+access_patient_visit,access_patient_visit,model_patient_visit,base.group_user,1,1,1,1
+access_prescription_line,access_prescription_line,model_prescription_line,base.group_user,1,1,1,1
+access_patient_visit_portal,access_patient_visit_portal,model_patient_visit,base.group_portal,1,0,0,0
+access_prescription_line_portal,access_prescription_line_portal,model_prescription_line,base.group_portal,1,0,0,0
+access_res_partner_portal,access_res-partner_portal,model_res_partner,base.group_portal,1,0,0,0
+hpp.access_hospital_question_answer,access_hospital_question_answer,hpp.model_hospital_question_answer,base.group_user,1,1,1,1
+access_patient_visit_report_read,patient.visit.report.read,model_patient_visit,base.group_portal,1,0,0,0
+access_res_partner_doctor_read,res.partner.doctor.read,model_res_partner,base.group_portal,1,0,0,0
+access_res_partner_portal_read_related,access_res-partner_portal_read_related,model_res_partner,base.group_portal,1,0,0,0
+access_account_payment_desk,account.payment.desk,model_account_payment,hpp.group_desk_person,1,1,1,0
+access_desk_person_payment,Desk Person Payment,account.model_account_payment,hpp.group_desk_person,1,1,1,1
+access_res_partner_doctor,access_res-partner_doctor,model_res_partner,hpp.group_hospital_doctor,1,1,0,0
+access_patient_visit_doctor,access_patient_visit_doctor,model_patient_visit,hpp.group_hospital_doctor,1,1,0,0
+access_prescription_line_doctor,access_prescription_line_doctor,model_prescription_line,hpp.group_hospital_doctor,1,1,0,0
+access_hospital_admin,access_hospital_admin,model_patient_visit,hpp.group_hospital_admin,1,1,1,1
